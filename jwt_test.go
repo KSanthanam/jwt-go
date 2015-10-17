@@ -121,7 +121,10 @@ func TestJWT(t *testing.T) {
 		if data.tokenString == "" {
 			data.tokenString = makeSample(data.claims)
 		}
-		token, err := jwt.Parse(data.tokenString, data.keyfunc)
+		token, err := jwt.Parse(jwt.ParseParam{
+			TokenString: data.tokenString,
+			Method: jwt.SigningMethodRS256,
+			KeyFunc: data.keyfunc})
 
 		if !reflect.DeepEqual(data.claims, token.Claims) {
 			t.Errorf("[%v] Claims mismatch. Expecting: %v  Got: %v", data.name, data.claims, token.Claims)
@@ -155,7 +158,7 @@ func TestParseRequest(t *testing.T) {
 
 		r, _ := http.NewRequest("GET", "/", nil)
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %v", data.tokenString))
-		token, err := jwt.ParseFromRequest(r, data.keyfunc)
+		token, err := jwt.ParseFromRequest(jwt.ParseParam{Req: r, Method: jwt.SigningMethodRS256, KeyFunc: data.keyfunc})
 
 		if token == nil {
 			t.Errorf("[%v] Token was not found: %v", data.name, err)

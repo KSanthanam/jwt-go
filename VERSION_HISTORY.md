@@ -1,4 +1,11 @@
 ## `jwt-go` Version History
+#### 2.4.0
+Add variable length Parameter passing for Parse Method. This enables forcing Alg method used for verification
+jwt.Parse can be called with signing methods as one of the parameters (jwt.ParseParam.Alg) to force verification method
+
+* **Compatibility Breaking Changes**
+    * Parse function takes in jwt.ParseParam struct instead of individual parameters
+    * passing the verification method is MANDATORY (This is a fix for Known Vulnerability)
 
 #### 2.3.0
 

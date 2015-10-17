@@ -114,10 +114,22 @@ func verifyToken() error {
 		fmt.Fprintf(os.Stderr, "Token len: %v bytes\n", len(tokData))
 	}
 
+	// get the signing alg
+	alg := jwt.GetSigningMethod(*flagAlg)
+	if alg == nil {
+		return fmt.Errorf("Couldn't find signing method: %v", *flagAlg)
+	}
+
 	// Parse the token.  Load the key from command line option
-	token, err := jwt.Parse(string(tokData), func(t *jwt.Token) (interface{}, error) {
-		return loadData(*flagKey)
-	})
+// string(tokData), func(t *jwt.Token) (interface{}, error) {
+//	return loadData(*flagKey)
+//}
+	token, err := jwt.Parse(jwt.ParseParam{
+		TokenString: string(tokData),
+		Method: alg,
+		KeyFunc: func(t *jwt.Token) (interface{}, error) {
+			return loadData(*flagKey)
+		}})
 
 	// Print some debug data
 	if *flagDebug && token != nil {
